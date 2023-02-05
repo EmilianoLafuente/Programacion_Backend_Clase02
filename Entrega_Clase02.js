@@ -1,53 +1,67 @@
-class ProductManager {
-  #products = []
+class Product {
+    constructor(title, description, price, thumbnail, code, stock) {
 
-  constructor() {
-    this.code = 0
-  }
-
-  getProducts() {
-    return this.#products
-  }
-
-  addProduct(title, description, price, thumbnail, code, stock ) {
-       this.code++
-       
-
-    const product = {
-      code: this.code,
-      title,
-      description,
-      price,
-      thumbnail,
-      stock
+      this.title = title,
+      this.description = description,
+      this.price = price,
+      this.thumbnail = thumbnail,
+      this.code = code,
+      this.stock = stock
     }
-    
-
-    const productCode = this.#products.find(productCode => product.code === code)
-
-    if (!productCode) {
-      
-      this.#products.push(product)
-      return `El producto ${title} se agrego con el codigo: ${product.code}`
-
-    } else {
-      
-      return `El producto con el codigo ${code} ya esta agegado`
-
+  }
+  
+  class ProductManager {
+    constructor() {
+      this.products = [];
+      this.lastId = 0;
+    }
+  
+    addProduct(product) {
+      if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
+        throw new Error("Todos los campos son obligatorios");
+      }
+  
+      const existingProduct = this.products.find(p => p.code === product.code);
+      if (existingProduct) {
+        throw new Error("El código del producto ya existe");
+      }
+  
+      product.id = ++this.lastId;
+      this.products.push(product);
     }
 
+    getProducts() {
+        return this.products
+      }
+
+    getProductById(id) {
+        for (let i = 0; i < this.products.length; i++) {
+          if (this.products[i].id === id) {
+            return this.products[i];
+          }
+        }
+        console.error('Not found');
+        return null;
+      }
+      
   }
+  
+  const productManager = new ProductManager();
+  
+  
+  
+  
+  try {
+    productManager.addProduct(new Product("Teclado", "Teclado", 20, 'abc', 1, 10));
+    productManager.addProduct(new Product("Mouse", "Mouse", 12, 'abc', 2, 10));
+    productManager.addProduct(new Product("Mouse", "Mouse", 12, 'abc', 2, 10));
+  } catch (error) {
+    console.error(error.message);
+  }
+  
+console.log(productManager.getProducts());
 
-}
-
-const manejadorDeProductos = new ProductManager()
-
-console.log(manejadorDeProductos.addProduct('mouse', 'mouse', 30, 'abc', 15))
-console.log(manejadorDeProductos.addProduct('teclados', 'teclados', 30, 'abc',  12 ))
-console.log(manejadorDeProductos.addProduct('parlantes', 'parlantes', 50, 'abc', 11 ))
-console.log(manejadorDeProductos.addProduct('parlantes', 'parlantes', 50, 'abc', 10 ))
+console.log(productManager.getProductById(1));
 
 
-manejadorDeProductos.getProducts()
-console.log(manejadorDeProductos.getProducts());
 
